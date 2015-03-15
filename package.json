@@ -1,0 +1,29 @@
+{
+    "name": "psdevbot",
+    "version": "0.1.0",
+    "description": "Bot that reports changes to Pokemon Showdown on Pokemon Showdown",
+    "bugs": "https://github.com/xfix/PSDevBot/issues",
+    "license": "MIT",
+    "author": "xfix (Konrad Borowski)",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/xfix/PSDevBot.git"
+    },
+    "config": {
+        "webhookport": "3420",
+        "secret": "",
+        "server": "sim.smogon.com",
+        "serverport": "8000",
+        "serverid": "showdown",
+        "nickname": "",
+        "password": "",
+        "room": ""
+    },
+    "dependencies": {
+        "githubhook": "^1.1.3",
+        "python-format": "^1.0.0",
+        "websocket": "^1.0.17",
+        "request": "^2.53.0"
+    },
+    "private": true
+}
