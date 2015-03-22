@@ -15,13 +15,13 @@ function copySafely(target, configuration, keys) {
     var added = 0
     for (var key in configuration) {
         if (!objectHas(configuration, key)) return
-        if (!keys.has(key)) {
+        if (!objectHas(keys, key)) {
             throw new TypeError(format("Unrecognized key '{}'", key))
         }
         target[key] = configuration[key]
         added += 1
     }
-    if (added !== keys.size) {
+    if (added !== Object.keys(keys).length) {
         var message = format("Expected {} keys, got {}.", keys.size, added)
         throw new TypeError(message)
     }
@@ -31,9 +31,14 @@ function Showdown(configuration) {
     copySafely(this, configuration, Showdown.keys)
 }
 
-Showdown.keys = new Set([
-    'server', 'serverport', 'serverid', 'nickname', 'password', 'room'
-])
+Showdown.keys = {
+    server: true,
+    serverport: true,
+    serverid: true,
+    nickname: true,
+    password: true,
+    room: true
+}
 
 Showdown.prototype.connect = function connect() {
     var connection = new WebSocketClient
