@@ -107,6 +107,7 @@ Showdown.prototype.finalize = function finalize(parts) {
             var command = format('|/trn {},0,{}', nickname, assertion)
             this.connection.send(command)
             this.connection.send('|/join ' + this.room)
+            this.connection.send('|/away')
         }.bind(this)
     )
 }
