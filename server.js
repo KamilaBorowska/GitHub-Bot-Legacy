@@ -40,6 +40,17 @@ function shorten(url, callback) {
     request.post('https://git.io', {form: {url: url}}, shortenCallback)
 }
 
+function getRepoName(repo) {
+    switch (repo) {
+    case 'Pokemon-Showdown':
+        return 'server'
+    case 'Pokemon-Showdown-Client':
+        return 'client'
+    default:
+        return repo
+    }
+}
+
 var escape = require('escape-html')
 
 github.on('push', function push(repo, ref, result) {
@@ -53,7 +64,7 @@ github.on('push', function push(repo, ref, result) {
 
         messages.push(format(
             message,
-            escape(repo),
+            escape(getRepoName(repo)),
             escape(result.pusher.name),
             escape(result.commits.length),
             escape(branch),
@@ -62,7 +73,7 @@ github.on('push', function push(repo, ref, result) {
         result.commits.forEach(function (commit) {
             messages.push(format(
                 "{}/<font color='800080'>{}</font> <font color='606060'>{}</font> <font color='909090'>{}</font>: {}",
-                escape(repo),
+                escape(getRepoName(repo)),
                 escape(branch),
                 escape(commit.id.substring(0, 8)),
                 escape(commit.author.name),
@@ -78,7 +89,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
     shorten(url, function pullRequestShortened(url) {
         client.report(format(
             "!htmlbox [<font color='FFC0CB'>{}</font>] <font color='909090'>{}</font> {} pull request #{}: {} {}",
-            escape(repo),
+            escape(getRepoName(repo)),
             escape(result.pull_request.user.login),
             escape(result.action),
             escape(result.pull_request.number),
