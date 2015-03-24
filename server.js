@@ -61,7 +61,7 @@ github.on('push', function push(repo, ref, result) {
         ))
         result.commits.forEach(function (commit) {
             messages.push(format(
-                "<font color='FFC0CB'>{}</font>/<font color='800080'>{}</font> <font color='A0A0A0'>{}</font> <font color='C0C0C0'>{}</font>: {}",
+                "{}/<font color='800080'>{}</font> <font color='A0A0A0'>{}</font> <font color='C0C0C0'>{}</font>: {}",
                 escape(repo),
                 escape(branch),
                 escape(commit.id.substring(0, 8)),
