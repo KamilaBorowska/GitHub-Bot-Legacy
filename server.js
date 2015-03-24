@@ -40,32 +40,36 @@ function shorten(url, callback) {
     request.post('https://git.io', {form: {url: url}}, shortenCallback)
 }
 
+var escape = require('escape-html')
+
 github.on('push', function push(repo, ref, result) {
     var url = result.compare
     var branch = /[^/]+$/.exec(ref)[0]
     shorten(url, function pushShortened(url) {
+        var messages = []
         var message = result.commits.length === 1 ?
-            "[{}] {} pushed **{}** new commit to {}: {}" :
-            "[{}] {} pushed **{}** new commits to {}: {}"
+            "[{}] <font color='C0C0C0'>{}</font> pushed <b>{}</b> new commit to <font color='800080'>{}</font>: <a href='{4}'>{4}</a>" :
+            "[{}] <font color='C0C0C0'>{}</font> pushed <b>{}</b> new commits to <font color='800080'>{}</font>: <a href='{4}'>{4}</a>"
 
-        client.report(format(
+        messages.push(format(
             message,
-            repo,
-            result.pusher.name,
-            result.commits.length,
-            branch,
-            url
+            escape(repo),
+            escape(result.pusher.name),
+            escape(result.commits.length),
+            escape(branch),
+            escape(url)
         ))
         result.commits.forEach(function (commit) {
-            client.report(format(
-                "{}/{} {} {}: {}",
-                repo,
-                branch,
-                commit.id.substring(0, 8),
-                commit.author.name,
-                /.+/.exec(commit.message)[0]
+            messages.push(format(
+                "<font color='FFC0CB'>{}</font>/<font color='800080'>{}</font> <font color='A0A0A0'>{}</font> <font color='C0C0C0'>{}</font>: {}",
+                escape(repo),
+                escape(branch),
+                escape(commit.id.substring(0, 8)),
+                escape(commit.author.name),
+                escape(/.+/.exec(commit.message)[0])
             ))
         })
+        client.report('!htmlbox ' + messages.join("<br>"))
     })
 })
 
@@ -73,13 +77,13 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
     var url = result.pull_request.html_url
     shorten(url, function pullRequestShortened(url) {
         client.report(format(
-            "[{}] {} {} pull request #{}: {} {}",
-            repo,
-            result.pull_request.user.login,
-            result.action,
-            result.pull_request.number,
-            result.pull_request.title,
-            url
+            "!htmlbox [<font color='FFC0CB'>{}</font>] <font color='C0C0C0'>{}</font> {} pull request #{}: {} {}",
+            escape(repo),
+            escape(result.pull_request.user.login),
+            escape(result.action),
+            escape(result.pull_request.number),
+            escape(result.pull_request.title),
+            escape(url)
         ))
     })
 })
