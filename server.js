@@ -86,12 +86,16 @@ github.on('push', function push(repo, ref, result) {
 
 github.on('pull_request', function pullRequest(repo, ref, result) {
     var url = result.pull_request.html_url
+    var action = result.action
+    if (action === 'synchronize') {
+        action = 'updated'
+    }
     shorten(url, function pullRequestShortened(url) {
         client.report(format(
             "!htmlbox [<font color='FFC0CB'>{}</font>] <font color='909090'>{}</font> {} pull request #{}: {} {}",
             escape(getRepoName(repo)),
             escape(result.pull_request.user.login),
-            escape(result.action),
+            escape(action),
             escape(result.pull_request.number),
             escape(result.pull_request.title),
             escape(url)
