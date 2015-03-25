@@ -93,13 +93,13 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
     }
     shorten(url, function pullRequestShortened(url) {
         client.report(format(
-            "!htmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} pull request #{}: {} {}",
+            "!htmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} pull request <a href=\"{}\">#{}: {}</a>",
             escape(getRepoName(repo)),
             escape(result.pull_request.user.login),
             escape(action),
+            escape(url),
             escape(result.pull_request.number),
-            escape(result.pull_request.title),
-            escape(url)
+            escape(result.pull_request.title)
         ))
     })
 })
