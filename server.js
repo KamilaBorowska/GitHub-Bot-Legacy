@@ -59,8 +59,8 @@ github.on('push', function push(repo, ref, result) {
     shorten(url, function pushShortened(url) {
         var messages = []
         var message = result.commits.length === 1 ?
-            "[{}] <font color='909090'>{}</font> pushed <b>{}</b> new commit to <font color='800080'>{}</font>: <a href=\"{4}\">{4}</a>" :
-            "[{}] <font color='909090'>{}</font> pushed <b>{}</b> new commits to <font color='800080'>{}</font>: <a href=\"{4}\">{4}</a>"
+            "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> pushed <b>{}</b> new commit to <font color='800080'>{}</font>: <a href=\"{4}\">{4}</a>" :
+            "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> pushed <b>{}</b> new commits to <font color='800080'>{}</font>: <a href=\"{4}\">{4}</a>"
 
         messages.push(format(
             message,
@@ -72,7 +72,7 @@ github.on('push', function push(repo, ref, result) {
         ))
         result.commits.forEach(function (commit) {
             messages.push(format(
-                "{}/<font color='800080'>{}</font> <a href=\"{}\"><font color='606060'>{}</font></a> <font color='909090'>{}</font>: {}",
+                "<font color='FF00FF'>{}</font>/<font color='800080'>{}</font> <a href=\"{}\"><font color='606060'>{}</font></a> <font color='909090'>{}</font>: {}",
                 escape(getRepoName(repo)),
                 escape(branch),
                 escape(commit.url),
@@ -93,7 +93,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
     }
     shorten(url, function pullRequestShortened(url) {
         client.report(format(
-            "!htmlbox [<font color='FFC0CB'>{}</font>] <font color='909090'>{}</font> {} pull request #{}: {} {}",
+            "!htmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} pull request #{}: {} {}",
             escape(getRepoName(repo)),
             escape(result.pull_request.user.login),
             escape(action),
