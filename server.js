@@ -71,6 +71,11 @@ github.on('push', function push(repo, ref, result) {
             escape(url)
         ))
         result.commits.forEach(function (commit) {
+            var commitMessage = commit.message
+            var shortCommit = /.+/.exec(commitMessage)[0]
+            if (commitMessage !== shortCommit) {
+                shortCommit += '…'
+            }
             messages.push(format(
                 "<font color='FF00FF'>{}</font>/<font color='800080'>{}</font> <a href=\"{}\"><font color='606060'>{}</font></a> <font color='909090'>{}</font>: {}",
                 escape(getRepoName(repo)),
@@ -78,7 +83,7 @@ github.on('push', function push(repo, ref, result) {
                 escape(commit.url),
                 escape(commit.id.substring(0, 6)),
                 escape(commit.author.name),
-                escape(/.+/.exec(commit.message)[0])
+                escape(shortCommit)
             ))
         })
         client.report('!htmlbox ' + messages.join("<br>"))
