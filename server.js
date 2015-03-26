@@ -76,7 +76,7 @@ github.on('push', function push(repo, ref, result) {
                 escape(getRepoName(repo)),
                 escape(branch),
                 escape(commit.url),
-                escape(commit.id.substring(0, 8)),
+                escape(commit.id.substring(0, 6)),
                 escape(commit.author.name),
                 escape(/.+/.exec(commit.message)[0])
             ))
