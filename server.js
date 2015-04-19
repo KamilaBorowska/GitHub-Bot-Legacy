@@ -90,7 +90,16 @@ github.on('push', function push(repo, ref, result) {
     })
 })
 
+var updates = {}
+
 github.on('pull_request', function pullRequest(repo, ref, result) {
+    var COOLDOWN = 10 * 60 * 1000
+    var requestNumber = result.pull_request.number
+    var now = +new Date
+    if (updates[requestNumber] && updates[requestNumber] + COOLDOWN > now) {
+        return
+    }
+    updates[requestNumber] = now
     var url = result.pull_request.html_url
     var action = result.action
     if (action === 'synchronize') {
@@ -103,7 +112,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
             escape(result.sender.login),
             escape(action),
             escape(url),
-            escape(result.pull_request.number),
+            escape(requestumber),
             escape(result.pull_request.title)
         ))
     })
