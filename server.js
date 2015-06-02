@@ -95,16 +95,20 @@ var updates = {}
 github.on('pull_request', function pullRequest(repo, ref, result) {
     var COOLDOWN = 10 * 60 * 1000
     var requestNumber = result.pull_request.number
-    var now = +new Date
-    if (updates[requestNumber] && updates[requestNumber] + COOLDOWN > now) {
-        return
-    }
-    updates[requestNumber] = now
     var url = result.pull_request.html_url
     var action = result.action
     if (action === 'synchronize') {
         action = 'updated'
     }
+    // Nobody cares about labels
+    if (action === 'labeled') {
+        return
+    }
+    var now = +new Date
+    if (updates[requestNumber] && updates[requestNumber] + COOLDOWN > now) {
+        return
+    }
+    updates[requestNumber] = now
     shorten(url, function pullRequestShortened(url) {
         client.report(format(
             "!htmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} pull request <a href=\"{}\">#{}</a>: {}",
