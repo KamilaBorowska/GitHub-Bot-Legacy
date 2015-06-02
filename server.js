@@ -59,13 +59,14 @@ github.on('push', function push(repo, ref, result) {
     shorten(url, function pushShortened(url) {
         var messages = []
         var message = result.commits.length === 1 ?
-            "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> pushed <b>{}</b> new commit to <font color='800080'>{}</font>: <a href=\"{4}\">{4}</a>" :
-            "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> pushed <b>{}</b> new commits to <font color='800080'>{}</font>: <a href=\"{4}\">{4}</a>"
+            "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} <b>{}</b> new commit to <font color='800080'>{}</font>: <a href=\"{5}\">{5}</a>" :
+            "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} <b>{}</b> new commits to <font color='800080'>{}</font>: <a href=\"{5}\">{5}</a>"
 
         messages.push(format(
             message,
             escape(getRepoName(repo)),
             escape(result.pusher.name),
+            result.forced ? '<font color="red">force-pushed</font>' : 'pushed',
             escape(result.commits.length),
             escape(branch),
             escape(url)
@@ -116,7 +117,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
             escape(result.sender.login),
             escape(action),
             escape(url),
-            escape(requestumber),
+            escape(requestNumber),
             escape(result.pull_request.title)
         ))
     })
