@@ -68,7 +68,7 @@ github.on('push', function push(repo, ref, result) {
             message,
             escape(getRepoName(repo)),
             escape(result.pusher.name),
-            result.forced ? '<font color="red">force-pushed</font>' : 'pushed',
+            result.created ? 'pushed <font color="red">in new branch</font>' : result.forced ? '<font color="red">force-pushed</font>' : 'pushed',
             escape(result.commits.length),
             escape(branch),
             escape(url)
@@ -107,7 +107,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
         action = 'updated'
     }
     // Nobody cares about labels
-    if (action === 'labeled') {
+    if (action === 'labeled' || action === 'unlabeled') {
         return
     }
     var now = +new Date
