@@ -23,6 +23,8 @@ Object.keys(Showdown.keys).forEach(function (key) {
 var client = new Showdown(parameters)
 client.connect()
 
+var allowedAuthLevels = new Set("~&@%")
+
 var github = require('githubhook')({
     port: port,
     secret: secret,
@@ -94,6 +96,9 @@ github.on('push', function push(repo, ref, result) {
 var updates = {}
 
 github.on('pull_request', function pullRequest(repo, ref, result) {
+    if (gitBans.has(result.sender.login.toLowerCase()) || gitBans.has(result.pull_request.user.login.toLowerCase())) {
+        return
+    }
     var COOLDOWN = 10 * 60 * 1000
     var requestNumber = result.pull_request.number
     var url = result.pull_request.html_url
@@ -121,6 +126,32 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
             escape(result.pull_request.title)
         ))
     })
+})
+
+var gitBans = new Set
+
+client.on('message', function (user, message) {
+    if (allowedAuthLevels.has(user.charAt(0)) && message.charAt(0) === '.') {
+        var parts = message.substring(1).split(' ')
+        var command = parts[0]
+        var argument = parts.slice(1).join(" ").toLowerCase()
+        if (command === "gitban") {
+            if (gitBans.has(argument)) {
+                client.report(`'${argument}' is already banned from being reported`)
+                return
+            }
+            gitBans.add(argument)
+            client.report(`'${argument}' was banned from being reported by this bot`)
+        }
+        else if (command === "gitunban") {
+            if (!gitBans.has(argument)) {
+                client.report(`'${argument}' is already allowed to be reported`)
+                return
+            }
+            gitBans.delete(argument)
+            client.report(`'${argument}' was unbanned from being reported by this bot`)
+        }
+    }
 })
 
 github.listen()

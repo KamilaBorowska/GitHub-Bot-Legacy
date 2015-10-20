@@ -2,6 +2,8 @@
 
 var MINUTE = 60000
 
+var EventEmitter = require('events')
+
 var format = require('python-format')
 var WebSocketClient = require('websocket').client
 
@@ -39,6 +41,13 @@ Showdown.keys = {
     password: true,
     room: true
 }
+
+Showdown.commands = new Map([
+    ['challstr', 'finalize'],
+    ['c:', 'onChatMessage'],
+])
+
+Showdown.prototype = new EventEmitter
 
 Showdown.prototype.connect = function connect() {
     var connection = new WebSocketClient
@@ -80,8 +89,8 @@ Showdown.prototype.onMessage = function onMessage(message) {
 Showdown.prototype.parseMessage = function parseMessage(message) {
     console.log(message)
     var parts = message.split('|')
-    if (parts[1] === 'challstr') {
-        this.finalize(parts)
+    if (Showdown.commands.has(parts[1])) {
+        this[Showdown.commands.get(parts[1])](parts)
     }
 }
 
@@ -110,6 +119,10 @@ Showdown.prototype.finalize = function finalize(parts) {
             setTimeout(function() {this.connection.send('|/away')}.bind(this), 4000)
         }.bind(this)
     )
+}
+
+Showdown.prototype.onChatMessage = function onChatMessage(parts) {
+    this.emit('message', parts[3], parts.slice(4).join('|'))
 }
 
 Showdown.prototype.report = function report(message) {
