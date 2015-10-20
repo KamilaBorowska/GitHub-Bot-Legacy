@@ -23,7 +23,7 @@ Object.keys(Showdown.keys).forEach(function (key) {
 var client = new Showdown(parameters)
 client.connect()
 
-var allowedAuthLevels = new Set("~&@%")
+var allowedAuthLevels = new Set("~#&@%")
 
 var github = require('githubhook')({
     port: port,
