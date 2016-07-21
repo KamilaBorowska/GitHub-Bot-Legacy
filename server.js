@@ -89,7 +89,7 @@ github.on('push', function push(repo, ref, result) {
                 escape(shortCommit)
             ))
         })
-        client.report('!htmlbox ' + messages.join("<br>"))
+        client.report('/addhtmlbox ' + messages.join("<br>"))
     })
 })
 
@@ -117,7 +117,7 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
     updates[requestNumber] = now
     shorten(url, function pullRequestShortened(url) {
         client.report(format(
-            "!htmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} pull request <a href=\"{}\">#{}</a>: {}",
+            "/addhtmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} pull request <a href=\"{}\">#{}</a>: {}",
             escape(getRepoName(repo)),
             escape(result.sender.login),
             escape(action),
