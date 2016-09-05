@@ -48,6 +48,8 @@ function getRepoName(repo) {
         return 'server'
     case 'Pokemon-Showdown-Client':
         return 'client'
+    case 'Pokemon-Showdown-Dex':
+        return 'dex'
     default:
         return repo
     }
