@@ -30,6 +30,7 @@ function copySafely(target, configuration, keys) {
 }
 
 function Showdown(configuration) {
+    this.queue = Promise.resolve()
     copySafely(this, configuration, Showdown.keys)
 }
 
@@ -126,7 +127,12 @@ Showdown.prototype.onChatMessage = function onChatMessage(parts) {
 }
 
 Showdown.prototype.report = function report(message) {
-    this.connection.send(format('{}|{}', this.room, message))
+    this.queue = this.queue.then(() => {
+        this.connection.send(`${this.room}|${message}`)
+        return new Promise(resolve => {
+            setTimeout(resolve, 500)
+        })
+    })
 }
 
 module.exports = Showdown
