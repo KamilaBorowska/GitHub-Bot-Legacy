@@ -114,10 +114,10 @@ Showdown.prototype.finalize = function finalize(parts) {
         function finish(error, response, body) {
             var result = JSON.parse(body.replace(/^]/, ""))
             var assertion = result.assertion
-            var command = format('|/trn {},0,{}', nickname, assertion)
-            this.connection.send(command)
-            setTimeout(function() {this.connection.send('|/join ' + this.room)}.bind(this), 2000)
-            setTimeout(function() {this.connection.send('|/away')}.bind(this), 4000)
+            var command = format('/trn {},0,{}', nickname, assertion)
+            this.report(command)
+            this.report('/join ' + this.room)
+            this.report('/away')
         }.bind(this)
     )
 }
