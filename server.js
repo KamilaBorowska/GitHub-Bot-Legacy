@@ -139,19 +139,19 @@ client.on('message', function (user, message) {
         var argument = parts.slice(1).join(" ").toLowerCase()
         if (command === "gitban") {
             if (gitBans.has(argument)) {
-                client.report(`'${argument}' is already banned from being reported`)
+                client.report(`/modnote '${argument}' is already banned from being reported`)
                 return
             }
             gitBans.add(argument)
-            client.report(`'${argument}' was banned from being reported by this bot`)
+            client.report(`/modnote '${argument}' was banned from being reported by this bot`)
         }
         else if (command === "gitunban") {
             if (!gitBans.has(argument)) {
-                client.report(`'${argument}' is already allowed to be reported`)
+                client.report(`/modnote '${argument}' is already allowed to be reported`)
                 return
             }
             gitBans.delete(argument)
-            client.report(`'${argument}' was unbanned from being reported by this bot`)
+            client.report(`/modnote '${argument}' was unbanned from being reported by this bot`)
         }
     }
 })
