@@ -18,7 +18,7 @@ if (!secret) {
 var Showdown = require('./showdown')
 var parameters = {}
 Object.keys(Showdown.keys).forEach(function (key) {
-    parameters[key] = process.env['npm_package_config_' + key]
+    parameters[key] = process.env[`npm_package_config_${key}`]
 })
 var client = new Showdown(parameters)
 client.connect()
