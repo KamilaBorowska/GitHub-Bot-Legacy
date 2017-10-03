@@ -108,6 +108,9 @@ github.on('pull_request', function pullRequest(repo, ref, result) {
     if (action === 'synchronize') {
         action = 'updated'
     }
+    if (action === 'review_requested') {
+        action = 'requested a review for'
+    }
     // Nobody cares about labels
     if (action === 'labeled' || action === 'unlabeled') {
         return
