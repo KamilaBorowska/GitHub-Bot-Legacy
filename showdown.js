@@ -70,6 +70,7 @@ Showdown.prototype.getConnectionString = function getConnectionString() {
 Showdown.prototype.onConnect = function onConnect(connection) {
     this.connection = connection
 
+    var onConnectionFailure = this.onConnectionFailure.bind(this)
     connection.on('message', this.onMessage.bind(this))
     console.info('Connected to Showdown server')
 }
