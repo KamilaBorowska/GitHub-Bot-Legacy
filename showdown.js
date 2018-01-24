@@ -52,6 +52,7 @@ Showdown.prototype = new EventEmitter
 
 Showdown.prototype.connect = function connect() {
     var connection = new WebSocketClient
+    connection.on('connectFailed', this.onConnectionFailure.bind(this))
     connection.on('connect', this.onConnect.bind(this))
 
     var connectionString = this.getConnectionString()
