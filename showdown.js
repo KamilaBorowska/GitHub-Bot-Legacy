@@ -67,10 +67,17 @@ Showdown.prototype.getConnectionString = function getConnectionString() {
     )
 }
 
+Showdown.prototype.onConnectionFailure = function onConnectionFailure(error) {
+    console.error('Error occured (%s), will connect in a minute', error)
+    setTimeout(this.connect.bind(this), MINUTE)
+}
+
 Showdown.prototype.onConnect = function onConnect(connection) {
     this.connection = connection
 
     var onConnectionFailure = this.onConnectionFailure.bind(this)
+    connection.on('error', onConnectionFailure)
+    connection.on('close', onConnectionFailure)
     connection.on('message', this.onMessage.bind(this))
     console.info('Connected to Showdown server')
 }
