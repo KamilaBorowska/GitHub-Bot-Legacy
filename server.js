@@ -6,13 +6,13 @@ var request = require('request')
 var port = +process.env.npm_package_config_webhookport
 if (!port) {
     console.error("Start the bot using 'npm start'.")
-    return
+    process.exit(1)
 }
 
 var secret = process.env.npm_package_config_secret
 if (!secret) {
     console.error("Secret not defined, please use 'npm config set psdevbot:secret value'.")
-    return
+    process.exit(1)
 }
 
 var Showdown = require('./showdown')
