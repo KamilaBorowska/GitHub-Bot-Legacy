@@ -26,5 +26,11 @@
         "request": "^2.85.0",
         "websocket": "^1.0.26"
     },
-    "private": true
+    "private": true,
+    "devDependencies": {
+        "standard": "^11.0.1"
+    },
+    "scripts": {
+	"test": "standard"
+    }
 }
