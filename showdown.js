@@ -112,6 +112,10 @@ Showdown.prototype.finalize = function finalize (parts) {
       }
     },
     function finish (error, response, body) {
+      if (error) {
+        this.finalize(parts)
+        return
+      }
       var result = JSON.parse(body.replace(/^]/, ''))
       var assertion = result.assertion
       var command = format('/trn {},0,{}', nickname, assertion)
