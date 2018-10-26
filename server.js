@@ -139,7 +139,7 @@ client.on('message', function (user, message) {
   if (allowedAuthLevels.has(user.charAt(0)) && message.charAt(0) === '.') {
     var parts = message.substring(1).split(' ')
     var command = parts[0]
-    var argument = parts.slice(1).join(' ').toLowerCase()
+    var argument = parts.slice(1).join(' ').toLowerCase().trim()
     if (command === 'gitban') {
       if (gitBans.has(argument)) {
         client.report(`/modnote '${argument}' is already banned from being reported`)
