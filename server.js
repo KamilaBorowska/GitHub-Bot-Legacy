@@ -10,7 +10,7 @@ if (!port) {
 }
 
 var secret = process.env.npm_package_config_secret
-if (secret !== undefined) {
+if (secret === undefined) {
   console.error("Secret not defined, please use 'npm config set psdevbot:secret value'.")
   process.exit(1)
 }
