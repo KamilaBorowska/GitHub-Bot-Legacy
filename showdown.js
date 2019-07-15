@@ -132,7 +132,7 @@ Showdown.prototype.onChatMessage = function onChatMessage (parts) {
 
 Showdown.prototype.report = function report (message) {
   this.queue = this.queue.then(() => {
-    this.connection.send(`${this.room}|${message}`)
+    this.connection.send(`${this.room}|${message}`.replace(/\n/g, ''))
     return new Promise(resolve => {
       setTimeout(resolve, 500)
     })
