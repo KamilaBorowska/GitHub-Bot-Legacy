@@ -121,6 +121,7 @@ Showdown.prototype.finalize = function finalize (parts) {
       var command = format('/trn {},0,{}', nickname, assertion)
       this.report(command)
       this.report('/join ' + this.room)
+      this.report('/join staff')
       this.report('/away')
     }.bind(this)
   )
@@ -133,6 +134,15 @@ Showdown.prototype.onChatMessage = function onChatMessage (parts) {
 Showdown.prototype.report = function report (message) {
   this.queue = this.queue.then(() => {
     this.connection.send(`${this.room}|${message}`.replace(/\n/g, ''))
+    return new Promise(resolve => {
+      setTimeout(resolve, 500)
+    })
+  })
+}
+
+Showdown.prototype.reportStaff = function report (message) {
+  this.queue = this.queue.then(() => {
+    this.connection.send(`staff|${message}`.replace(/\n/g, ''))
     return new Promise(resolve => {
       setTimeout(resolve, 500)
     })
