@@ -61,20 +61,10 @@ github.on('push', function push (repo, ref, result) {
   var url = result.compare
   var branch = /[^/]+$/.exec(ref)[0]
   shorten(url, function pushShortened (url) {
+    if (branch !== 'master') return
     var messages = []
-    var message = result.commits.length === 1
-      ? "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} <b>{}</b> new commit to <font color='800080'>{}</font>: <a href=\"{5}\">{5}</a>"
-      : "[<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} <b>{}</b> new commits to <font color='800080'>{}</font>: <a href=\"{5}\">{5}</a>"
+    var staffMessages = []
 
-    messages.push(format(
-      message,
-      escape(getRepoName(repo)),
-      escape(result.pusher.name),
-      result.created ? 'pushed <font color="red">in new branch</font>' : result.forced ? '<font color="red">force-pushed</font>' : 'pushed',
-      escape(result.commits.length),
-      escape(branch),
-      escape(url)
-    ))
     result.commits.forEach(function (commit) {
       var commitMessage = commit.message
       var shortCommit = /.+/.exec(commitMessage)[0]
@@ -82,16 +72,23 @@ github.on('push', function push (repo, ref, result) {
         shortCommit += '…'
       }
       messages.push(format(
-        "<font color='FF00FF'>{}</font>/<font color='800080'>{}</font> <a href=\"{}\"><font color='606060'>{}</font></a> <font color='909090'>{}</font>: {}",
+        "[<font color='FF00FF'>{}</font>] <a href=\"{}\"><font color='606060'>{}</font></a> {} <font color='909090'>({})</font>",
         escape(getRepoName(repo)),
-        escape(branch),
         escape(commit.url),
         escape(commit.id.substring(0, 6)),
-        escape(commit.author.name),
-        escape(shortCommit)
+        escape(shortCommit),
+        escape(commit.author.name.split(' ')[0])
+      ))
+      staffMessages.push(format(
+        "[<font color='FF00FF'>{}</font>] <a href=\"{}\">{}</a> <font color='909090'>({})</font>",
+        escape(getRepoName(repo)),
+        escape(commit.url),
+        escape(shortCommit),
+        escape(commit.author.name.split(' ')[0])
       ))
     })
     client.report('/addhtmlbox ' + messages.join('<br>'))
+    client.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
   })
 })
 
@@ -122,7 +119,7 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
   updates[requestNumber] = now
   shorten(url, function pullRequestShortened (url) {
     client.report(format(
-      "/addhtmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} pull request <a href=\"{}\">#{}</a>: {}",
+      "/addhtmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} <a href=\"{}\">PR#{}</a>: {}",
       escape(getRepoName(repo)),
       escape(result.sender.login),
       escape(action),
