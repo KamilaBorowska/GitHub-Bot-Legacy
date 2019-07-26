@@ -17,7 +17,19 @@
         "serverid": "showdown",
         "nickname": "",
         "password": "",
-        "room": ""
+        "room": "",
+        "usernames": {
+            "Guangcong Luo": "Zarel",
+            "Marty-D": "Marty",
+            "Bär Halberkamp": "bumbadadabum",
+            "Kirk Scheibelhut": "pre",
+            "Ben Davies": "Morfent",
+            "Konrad Borowski": "xfix",
+            "whales": "peach",
+            "Jacob McLemore": "McLemore",
+            "TheJetOU": "jetou",
+            "LegoFigure11": "Lego"
+        }
     },
     "dependencies": {
         "escape-html": "^1.0.1",
