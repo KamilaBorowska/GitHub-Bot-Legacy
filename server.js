@@ -55,6 +55,12 @@ function getRepoName (repo) {
   }
 }
 
+function toUsername (author) {
+  var usernames = process.env.npm_package_config_usernames
+  var username = usernames && usernames[author]
+  return username || author.split(' ')[0]
+}
+
 var escape = require('escape-html')
 
 github.on('push', function push (repo, ref, result) {
@@ -71,20 +77,21 @@ github.on('push', function push (repo, ref, result) {
       if (commitMessage !== shortCommit) {
         shortCommit += '…'
       }
+      var username = toUsername(commit.author.name)
       messages.push(format(
         "[<font color='FF00FF'>{}</font>] <a href=\"{}\"><font color='606060'>{}</font></a> {} <font color='909090'>({})</font>",
         escape(getRepoName(repo)),
         escape(commit.url),
         escape(commit.id.substring(0, 6)),
         escape(shortCommit),
-        escape(commit.author.name.split(' ')[0])
+        escape(username)
       ))
       staffMessages.push(format(
         "[<font color='FF00FF'>{}</font>] <a href=\"{}\">{}</a> <font color='909090'>({})</font>",
         escape(getRepoName(repo)),
         escape(commit.url),
         escape(shortCommit),
-        escape(commit.author.name.split(' ')[0])
+        escape(username)
       ))
     })
     client.report('/addhtmlbox ' + messages.join('<br>'))
