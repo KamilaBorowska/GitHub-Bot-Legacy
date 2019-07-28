@@ -55,10 +55,10 @@ function getRepoName (repo) {
   }
 }
 
-function toUsername (author) {
+function toUsername (login) {
   var usernames = process.env.npm_package_config_usernames
-  var username = usernames && usernames[author]
-  return username || author.split(' ')[0]
+  var username = usernames && usernames[login]
+  return username || login
 }
 
 var escape = require('escape-html')
@@ -77,7 +77,7 @@ github.on('push', function push (repo, ref, result) {
       if (commitMessage !== shortCommit) {
         shortCommit += '…'
       }
-      var username = toUsername(commit.author.name)
+      var username = toUsername(result.sender.login)
       messages.push(format(
         "[<font color='FF00FF'>{}</font>] <a href=\"{}\"><font color='606060'>{}</font></a> {} <font color='909090'>({})</font>",
         escape(getRepoName(repo)),
@@ -128,7 +128,7 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
     client.report(format(
       "/addhtmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} <a href=\"{}\">PR#{}</a>: {}",
       escape(getRepoName(repo)),
-      escape(result.sender.login),
+      escape(toUsername(result.sender.login)),
       escape(action),
       escape(url),
       escape(requestNumber),
