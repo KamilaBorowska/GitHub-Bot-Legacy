@@ -19,16 +19,19 @@
         "password": "",
         "room": "",
         "usernames": {
-            "Guangcong Luo": "Zarel",
+            "AustinXII": "Austin",
+            "HoeenCoder": "HoeenHero",
+            "Kaiepi": "Morfent",
+            "KrisXV": "Kris",
+            "LegoFigure11": "Lego",
             "Marty-D": "Marty",
-            "Bär Halberkamp": "bumbadadabum",
-            "Kirk Scheibelhut": "pre",
-            "Ben Davies": "Morfent",
-            "Konrad Borowski": "xfix",
-            "whales": "peach",
-            "Jacob McLemore": "McLemore",
+            "QuiteQuiet": "Quite Quiet",
+            "Spandamn": "spandan",
+            "TheImmortal": "The Immortal",
             "TheJetOU": "jetou",
-            "LegoFigure11": "Lego"
+            "jmclemo6": "McLemore",
+            "scheibo": "pre",
+            "whalemer": "peach"
         }
     },
     "dependencies": {
