@@ -55,10 +55,15 @@ function getRepoName (repo) {
   }
 }
 
+var usernames = {}
+for (const variable in process.env) {
+  if (variable.startsWith('npm_package_config_usernames_')) {
+    usernames[variable.slice(29)] = process.env[variable]
+  }
+}
+
 function toUsername (login) {
-  var usernames = process.env.npm_package_config_usernames
-  var username = usernames && usernames[login]
-  return username || login
+  return usernames[login] || login
 }
 
 var escape = require('escape-html')
