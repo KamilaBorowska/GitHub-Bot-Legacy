@@ -62,8 +62,12 @@ for (const variable in process.env) {
   }
 }
 
-function toUsername (login) {
-  return usernames[login] || login
+// Name can either be a login (for pull_request) or the commit author's name (for push).
+// If we can't find the name in our username's map we want to return the login as is
+// (logins can't contain spaces) or the author's first name part.
+function toUsername (name) {
+  const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '')
+  return usernames[id] || name.split(' ')[0]
 }
 
 var escape = require('escape-html')
@@ -82,7 +86,10 @@ github.on('push', function push (repo, ref, result) {
       if (commitMessage !== shortCommit) {
         shortCommit += '…'
       }
-      var username = toUsername(result.sender.login)
+      // result.sender.login here is the login of user which performed the push,
+      // not the original author of the commit. We don't have the GitHub login for
+      // the user, the best we have for attribution is the commit's author's name.
+      var username = toUsername(commit.author.name)
       messages.push(format(
         "[<font color='FF00FF'>{}</font>] <a href=\"{}\"><font color='606060'>{}</font></a> {} <font color='909090'>({})</font>",
         escape(getRepoName(repo)),
