@@ -1,5 +1,5 @@
-Pokemon Showdown Development Bot
-================================
+GitHub Bot
+==========
 
 This bot receives commit data from GitHub, and posts in the Showdown chat.
 
