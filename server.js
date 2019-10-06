@@ -51,7 +51,7 @@ function getRepoName (repo) {
     case 'Pokemon-Showdown-Dex':
       return 'dex'
     default:
-      return repo
+      return repo.toLowerCase()
   }
 }
 
