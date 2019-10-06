@@ -55,12 +55,7 @@ function getRepoName (repo) {
   }
 }
 
-var usernames = {}
-for (const variable in process.env) {
-  if (variable.startsWith('npm_package_config_usernames_')) {
-    usernames[variable.slice(29)] = process.env[variable]
-  }
-}
+const usernames = require('./usernames')
 
 // Name can either be a login (for pull_request) or the commit author's name (for push).
 // If we can't find the name in our username's map we want to return the login as is
