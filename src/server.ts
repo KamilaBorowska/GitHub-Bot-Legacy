@@ -60,7 +60,7 @@ function getRepoName (repo: string) {
 // Name can either be a login (for pull_request) or the commit author's name (for push).
 // If we can't find the name in our username's map we want to return the login as is
 // (logins can't contain spaces) or the author's first name part.
-function toUsername (name) {
+function toUsername (name: string) {
   const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '')
   return usernames[id] || name.split(' ')[0]
 }
