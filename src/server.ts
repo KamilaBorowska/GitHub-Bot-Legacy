@@ -72,8 +72,8 @@ github.on('push', function push (repo, ref, result) {
   var branch = /[^/]+$/.exec(ref)[0]
   shorten(url, function pushShortened (url) {
     if (branch !== 'master') return
-    var messages = []
-    var staffMessages = []
+    var messages: string[] = []
+    var staffMessages: string[] = []
 
     result.commits.forEach(function (commit) {
       var commitMessage = commit.message
