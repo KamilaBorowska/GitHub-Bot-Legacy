@@ -45,9 +45,9 @@ class Showdown extends EventEmitter {
     room: true
   }
 
-  static commands = new Map([
-    ['challstr', 'finalize'],
-    ['c:', 'onChatMessage']
+  static commands = new Map<string, (s: Showdown, parts: string[]) => void>([
+    ['challstr', (s, parts) => s.finalize(parts)],
+    ['c:', (s, parts) => s.onChatMessage(parts)]
   ])
 
   connect() {
@@ -83,11 +83,12 @@ class Showdown extends EventEmitter {
     this.parseMessage(message.utf8Data)
   }
 
-  parseMessage(message) {
+  parseMessage(message: string) {
     console.log(message)
     var parts = message.split('|')
-    if (Showdown.commands.has(parts[1])) {
-      this[Showdown.commands.get(parts[1])](parts)
+    const handler = Showdown.commands.get(parts[1])
+    if (handler) {
+      handler(this, parts)
     }
   }
 
