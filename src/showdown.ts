@@ -107,7 +107,7 @@ class Showdown extends EventEmitter {
           pass: password
         }
       },
-      function finish (error, response, body) {
+      (error, response, body) => {
         if (error) {
           this.finalize(parts)
           return
@@ -119,7 +119,7 @@ class Showdown extends EventEmitter {
         this.report('/join ' + this.room)
         this.report('/join staff')
         this.report('/away')
-      }.bind(this)
+      }
     )
   }
 
