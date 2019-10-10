@@ -1,7 +1,9 @@
 'use strict'
 
-var format = require('python-format')
-var request = require('request')
+import * as format from 'python-format'
+import * as request from 'request'
+import * as escape from 'escape-html'
+import * as usernames from './usernames.json'
 
 var port = +process.env.npm_package_config_webhookport
 if (!port) {
@@ -55,8 +57,6 @@ function getRepoName (repo) {
   }
 }
 
-const usernames = require('./usernames')
-
 // Name can either be a login (for pull_request) or the commit author's name (for push).
 // If we can't find the name in our username's map we want to return the login as is
 // (logins can't contain spaces) or the author's first name part.
@@ -64,8 +64,6 @@ function toUsername (name) {
   const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '')
   return usernames[id] || name.split(' ')[0]
 }
-
-var escape = require('escape-html')
 
 github.on('push', function push (repo, ref, result) {
   var url = result.compare

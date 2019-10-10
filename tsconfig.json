@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "outDir": "./built"
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
