@@ -44,7 +44,7 @@ function shorten (url: string, callback: (shortened: string) => void) {
   request.post('https://git.io', {form: {url: url}}, shortenCallback)
 }
 
-function getRepoName (repo) {
+function getRepoName (repo: string) {
   switch (repo) {
     case 'Pokemon-Showdown':
       return 'server'
