@@ -1,6 +1,7 @@
 'use strict'
 
 import * as request from 'request'
+import { Response } from 'request'
 import * as h from 'escape-html'
 import * as usernames from './usernames.json'
 
@@ -32,8 +33,8 @@ var github = require('githubhook')({
   logger: console
 })
 
-function shorten (url, callback) {
-  function shortenCallback (error, response, body) {
+function shorten (url: string, callback: (shortened: string) => void) {
+  function shortenCallback (error: unknown, response: Response, body: string) {
     var shortenedUrl = url
     if (!error && response.headers.location) {
       shortenedUrl = response.headers.location
