@@ -140,7 +140,7 @@ Showdown.prototype.report = function report (message) {
   })
 }
 
-Showdown.prototype.reportStaff = function report (message) {
+Showdown.prototype.reportStaff = function report (message: string) {
   this.queue = this.queue.then(() => {
     this.connection.send(`staff|${message}`.replace(/\n/g, ''))
     return new Promise(resolve => {
