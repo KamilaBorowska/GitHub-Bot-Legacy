@@ -22,7 +22,6 @@
     "dependencies": {
         "escape-html": "^1.0.1",
         "githubhook": "^1.9.3",
-        "python-format": "^1.0.0",
         "request": "^2.88.0",
         "websocket": "^1.0.29"
     },

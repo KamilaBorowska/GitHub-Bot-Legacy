@@ -1,8 +1,7 @@
 'use strict'
 
-import * as format from 'python-format'
 import * as request from 'request'
-import * as escape from 'escape-html'
+import * as h from 'escape-html'
 import * as usernames from './usernames.json'
 
 var port = +process.env.npm_package_config_webhookport
@@ -83,21 +82,13 @@ github.on('push', function push (repo, ref, result) {
       // not the original author of the commit. We don't have the GitHub login for
       // the user, the best we have for attribution is the commit's author's name.
       var username = toUsername(commit.author.name)
-      messages.push(format(
-        "[<font color='FF00FF'>{}</font>] <a href=\"{}\"><font color='606060'>{}</font></a> {} <font color='909090'>({})</font>",
-        escape(getRepoName(repo)),
-        escape(commit.url),
-        escape(commit.id.substring(0, 6)),
-        escape(shortCommit),
-        escape(username)
-      ))
-      staffMessages.push(format(
-        "[<font color='FF00FF'>{}</font>] <a href=\"{}\">{}</a> <font color='909090'>({})</font>",
-        escape(getRepoName(repo)),
-        escape(commit.url),
-        escape(shortCommit),
-        escape(username)
-      ))
+      const repoName = getRepoName(repo)
+      const { url } = commit
+      const id = commit.id.substring(0, 6)
+      const formattedRepo = `[<font color='FF00FF'>${h(repoName)}</font>]`
+      const formattedUserName = `<font color='909090'>(${h(username)})</font>`
+      messages.push(`${formattedRepo} <a href=\"${h(url)}\"><font color='606060'>${h(id)}</font></a> ${h(shortCommit)} ${formattedUserName}`)
+      staffMessages.push(`${formattedRepo} <a href=\"${h(url)}\">${h(shortCommit)}</a> ${formattedUserName}`)
     })
     client.report('/addhtmlbox ' + messages.join('<br>'))
     client.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
@@ -130,15 +121,13 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
   }
   updates[requestNumber] = now
   shorten(url, function pullRequestShortened (url) {
-    client.report(format(
-      "/addhtmlbox [<font color='FF00FF'>{}</font>] <font color='909090'>{}</font> {} <a href=\"{}\">PR#{}</a>: {}",
-      escape(getRepoName(repo)),
-      escape(toUsername(result.sender.login)),
-      escape(action),
-      escape(url),
-      escape(requestNumber),
-      escape(result.pull_request.title)
-    ))
+    const repoName = getRepoName(repo)
+    const userName = toUsername(result.sender.login)
+    const title = result.pull_request.title
+    client.report(
+      `/addhtmlbox [<font color='FF00FF'>${h(repoName)}</font>] <font color='909090'>${userName}</font> ` +
+      `${action} <a href=\"${url}\">PR#${requestNumber}</a>: ${title}`
+    )
   })
 })
 
