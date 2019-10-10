@@ -57,6 +57,8 @@ function getRepoName (repo: string) {
   }
 }
 
+const reposToReportInStaff = new Set(['Pokemon-Showdown', 'Pokemon-Showdown-Client', 'Pokemon-Showdown-Dex'])
+
 // Name can either be a login (for pull_request) or the commit author's name (for push).
 // If we can't find the name in our username's map we want to return the login as is
 // (logins can't contain spaces) or the author's first name part.
@@ -92,7 +94,9 @@ github.on('push', function push (repo, ref, result) {
       staffMessages.push(`${formattedRepo} <a href=\"${h(url)}\">${h(shortCommit)}</a> ${formattedUserName}`)
     })
     client.report('/addhtmlbox ' + messages.join('<br>'))
-    client.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
+    if (reposToReportInStaff.has(repo)) {
+      client.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
+    }
   })
 })
 
