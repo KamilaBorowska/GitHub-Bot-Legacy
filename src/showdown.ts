@@ -98,7 +98,7 @@ class Showdown extends EventEmitter {
     var nickname = this.nickname
     var password = this.password
     request.post(
-      `https://play.pokemonshowdown.com/~~${this.serverId}/action.php`,
+      `https://play.pokemonshowdown.com/~~${this.serverid}/action.php`,
       {
         form: {
           act: 'login',
