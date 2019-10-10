@@ -92,7 +92,7 @@ class Showdown extends EventEmitter {
     }
   }
 
-  finalize (parts) {
+  finalize (parts: string[]) {
     var id = parts[2]
     var str = parts[3]
     var nickname = this.nickname
