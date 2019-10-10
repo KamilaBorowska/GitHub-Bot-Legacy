@@ -107,7 +107,7 @@ class Showdown extends EventEmitter {
           pass: password
         }
       },
-      (error, response, body) => {
+      (error: unknown, _response: unknown, body: string) => {
         if (error) {
           this.finalize(parts)
           return
