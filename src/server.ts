@@ -34,7 +34,7 @@ var github = require('githubhook')({
 })
 
 function shorten (url: string, callback: (shortened: string) => void) {
-  function shortenCallback (error: unknown, response: Response, body: string) {
+  function shortenCallback (error: unknown, response: Response) {
     var shortenedUrl = url
     if (!error && response.headers.location) {
       shortenedUrl = response.headers.location
