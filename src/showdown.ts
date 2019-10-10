@@ -127,7 +127,7 @@ Showdown.prototype.finalize = function finalize (parts) {
   )
 }
 
-Showdown.prototype.onChatMessage = function onChatMessage (parts) {
+Showdown.prototype.onChatMessage = function onChatMessage (parts: string[]) {
   this.emit('message', parts[3], parts.slice(4).join('|'))
 }
 
