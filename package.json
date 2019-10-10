@@ -34,6 +34,6 @@
     },
     "scripts": {
         "build": "tsc",
-        "start": "npm run build && node built/server.js"
+        "start": "node built/server.js"
     }
 }
