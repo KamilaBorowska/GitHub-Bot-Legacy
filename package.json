@@ -28,6 +28,7 @@
     "private": true,
     "devDependencies": {
         "@types/node": "^12.7.12",
+        "@types/request": "^2.48.3",
         "typescript": "^3.6.4"
     },
     "scripts": {
