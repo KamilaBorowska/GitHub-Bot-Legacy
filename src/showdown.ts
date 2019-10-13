@@ -97,31 +97,48 @@ class Showdown extends EventEmitter {
     var str = parts[3]
     var nickname = this.nickname
     var password = this.password
-    request.post(
-      `https://play.pokemonshowdown.com/~~${this.serverid}/action.php`,
-      {
-        form: {
-          act: 'login',
-          challengekeyid: id,
-          challenge: str,
-          name: nickname,
-          pass: password
-        }
-      },
-      (error: unknown, _response: unknown, body: string) => {
+    var url = `https://play.pokemonshowdown.com/~~${this.serverid}/action.php`
+    const getCallback = (mapper: (body: string) => string) => {
+      return (error: unknown, _response: unknown, body: string) => {
         if (error) {
           this.finalize(parts)
           return
         }
-        var result = JSON.parse(body.replace(/^]/, ''))
-        var assertion = result.assertion
+        const assertion = mapper(body)
         var command = `/trn ${nickname},0,${assertion}`
         this.report(command)
         this.report('/join ' + this.room)
         this.report('/join staff')
         this.report('/away')
       }
-    )
+    }
+    if (password) {
+      request.post(
+        url,
+        {
+          form: {
+            act: 'login',
+            challengekeyid: id,
+            challenge: str,
+            name: nickname,
+            pass: password
+          },
+        },
+        getCallback(body => JSON.parse(body.replace(/^]/, '')).assertion)
+      )
+    } else {
+      request.post(
+        url,
+        {
+          form: {
+            act: 'getassertion',
+            challstr: `${id}|${str}`,
+            userid: nickname,
+          },
+        },
+        getCallback(body => body)
+      )
+    }
   }
 
   onChatMessage(parts: string[]) {
