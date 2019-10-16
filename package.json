@@ -17,9 +17,11 @@
         "serverid": "showdown",
         "nickname": "",
         "password": "",
-        "room": ""
+        "room": "",
+        "token": ""
     },
     "dependencies": {
+        "discord.js": "^11.1.0",
         "escape-html": "^1.0.1",
         "githubhook": "^1.9.3",
         "request": "^2.88.0",
