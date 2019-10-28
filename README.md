@@ -15,7 +15,7 @@ properties that can be configured for a bot.
 -   `server` - server address (default sim.smogon.com)
 -   `serverport` - server port (default 8000)
 -   `serverid` - server identifier used for logins (default showdown)
--   `token` - token used to login to discord
+-   `token` - token used to login to Discord
 
 
 To set repository to trigger bot, access settings panel, pick "Webhooks
