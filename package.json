@@ -18,7 +18,9 @@
         "nickname": "",
         "password": "",
         "room": "",
-        "token": ""
+        "token": "",
+        "discordnotify": "",
+        "discorddefault": ""
     },
     "dependencies": {
         "discord.js": "^11.1.0",

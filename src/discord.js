@@ -5,23 +5,36 @@ const getRepo = require('./parser').getRepoName
 
 var client = new discordjs.Client()
 var token = process.env[`npm_package_config_token`]
+var notify = process.env[`npm_package_config_discordnotify`]
+var default = process.env[`npm_package_config_discorddefault`]
+
+if (!notify) return;
+notify = JSON.parse(notify)
+
+if (token) {
+    client.login(token);
+}
 
 var loggedIn = false;
-if (token) client.login(token).then(loggedIn = true).catch(console.error);
-if (!loggedIn) return;
 
 client.on('ready', function() {
     console.log('Successfully connected to Discord');
+    loggedIn = true;
 })
 
-var SIM_DEV = client.channels.get('630845310033330206') // #sim-dev
-var OTHER_DEV = client.channels.get('630839273070788619') // #other-dev
+if (!loggedIn) console.log('The bot has not successfully logged in to Discord.')
 
 exports.report = function (message, repo) {
+    if (!notify || !loggedIn) return;
     repo = getRepo(repo)
-    if (repo === 'server' || repo === 'client' || repo === 'dex') {
-        SIM_DEV.send(message)
-    } else {
-        OTHER_DEV.send(message)
+    var channels = notify[repo];
+    if (channels.length) {
+        channels.forEach(function(chan) {
+            var curChan = client.channels.get(chan)
+            if (curChan) curChan.send(message)
+        })
+    } else if (default) {
+        var defaultChannel = client.channels.get(default)
+        if (defaultChannel) defaultChannel.send(message)
     }
 }

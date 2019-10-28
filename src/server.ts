@@ -62,35 +62,41 @@ function toUsername (name: string) {
 github.on('push', function push (repo, ref, result) {
   var url = result.compare
   var branch = /[^/]+$/.exec(ref)[0]
-  shorten(url, function pushShortened (url) {
-    if (branch !== 'master') return
-    var messagesPS: string[] = []
-    var messagesDiscord: string[] = []
-    var staffMessages: string[] = []
+  if (branch !== 'master') return
+  var promises = []
+  var messagesPS: string[] = []
+  var messagesDiscord: string[] = []
+  var staffMessages: string[] = []
 
-    result.commits.forEach(function (commit) {
-      var commitMessage = commit.message
-      var shortCommit = /.+/.exec(commitMessage)[0]
-      if (commitMessage !== shortCommit) {
-        shortCommit += '…'
-      }
-      // result.sender.login here is the login of user which performed the push,
-      // not the original author of the commit. We don't have the GitHub login for
-      // the user, the best we have for attribution is the commit's author's name.
-      var username = toUsername(commit.author.name)
-      const { url } = commit
-      const id = commit.id.substring(0, 6)
-      messagesPS.push(parser.formatPush('PS', id, repo, username, url, shortCommit))
-      staffMessages.push(parser.formatPush('PS', id, repo, username, url, shortCommit, true))
-      messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username));
-    })
+  result.commits.forEach(function (commit) {
+    promises.push(new Promise(function (resolve, reject) {
+      shorten(commit.url, function (url) {
+        var commitMessage = commit.message
+        var shortCommit = /.+/.exec(commitMessage)[0]
+        if (commitMessage !== shortCommit) {
+          shortCommit += '…'
+        }
+        // result.sender.login here is the login of user which performed the push,
+        // not the original author of the commit. We don't have the GitHub login for
+        // the user, the best we have for attribution is the commit's author's name.
+        var username = toUsername(commit.author.name)
+        const id = commit.id.substring(0, 6)
+        messagesPS.push(parser.formatPush('PS', id, repo, username, url, shortCommit))
+        staffMessages.push(parser.formatPush('PS', id, repo, username, url, shortCommit, true))
+        messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username, url, shortCommit));
+        return resolve()
+      })
+    }))
+  })
+
+  Promise.all(promises).then(function () {
     showdownClient.report('/addhtmlbox ' + messagesPS.join('<br>'))
     discord.report(messagesDiscord.join('\n'), repo)
-    if (reposToReportInStaff.has(repo)) {
-      showdownClient.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
-    }
+    if (reposToReportInStaff.has(repo)) showdownClient.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
   })
 })
+
+
 
 var updates = {}
 

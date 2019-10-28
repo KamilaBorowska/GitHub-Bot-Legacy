@@ -35,8 +35,8 @@ exports.formatPush = function (location, hash, repo, author, url, message, staff
     var buff = ''
     repo = this.getRepoName(repo);
     if (location === 'PS') {
-        var formattedRepo = `[<font color='FF00FF'>${h(repoName)}</font>]`
-        var formattedUsername = `<font color='909090'>(${h(author)})</font>`
+        var formattedRepo = `[<font color='FF00FF'>${escape(repo)}</font>]`
+        var formattedUsername = `<font color='909090'>(${escape(author)})</font>`
         buff += `${formattedRepo} <a href=\"${escape(url)}\">`
         if (staff) {
             buff += `${escape(url)}</a> ${formattedUsername}`
