@@ -62,7 +62,6 @@ function toUsername (name: string) {
 github.on('push', function push (repo, ref, result) {
   var branch = /[^/]+$/.exec(ref)[0]
   if (branch !== 'master') return
-  var promises = []
   var messagesPS: string[] = []
   var messagesDiscord: string[] = []
   var staffMessages: string[] = []
