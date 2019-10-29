@@ -39,7 +39,7 @@ exports.report = function (message, repo) {
         for (let chan of channels) {
             var curChan = client.channels.get(chan)
             if (curChan) curChan.send(message)
-        })
+        }
     } else if (defaultNotify) {
         var defaultChannel = client.channels.get(defaultNotify)
         if (defaultChannel) defaultChannel.send(message)

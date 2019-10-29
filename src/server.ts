@@ -67,7 +67,7 @@ github.on('push', function push (repo, ref, result) {
   var messagesDiscord: string[] = []
   var staffMessages: string[] = []
 
-  Promise.all(result.commits.map(commit => new Promise(async (resolve) => {
+  Promise.all(result.commits.map(async commit => {
       commit.url = await shorten(commit.url)
 
       var commitMessage = commit.message
@@ -83,8 +83,7 @@ github.on('push', function push (repo, ref, result) {
       messagesPS.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit))
       staffMessages.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit, true))
       messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username, commit.url, shortCommit));
-      resolve()
-  }))).then(function () {
+  })).then(function () {
     showdownClient.report('/addhtmlbox ' + messagesPS.join('<br>'))
     discord.report(messagesDiscord.join('\n'), repo)
     if (reposToReportInStaff.has(repo)) showdownClient.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
