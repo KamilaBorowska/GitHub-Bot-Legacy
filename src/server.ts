@@ -36,18 +36,18 @@ var github = require('githubhook')({
   logger: console
 })
 
-function shorten (url: string, callback: (shortened: string) => void) {
-  function shortenCallback (error: unknown, response: Response) {
-    var shortenedUrl = url
-    if (!error && response.headers.location) {
-      shortenedUrl = response.headers.location
+function shorten (url: string) {
+  return new Promise(function (resolve, reject) {
+    function shortenCallback (error: unknown, response: Response) {
+      var shortenedUrl = url
+      if (!error && response.headers.location) {
+        shortenedUrl = response.headers.location
+      }
+      resolve(shortenedUrl)
     }
-    callback(shortenedUrl)
-  }
-  request.post('https://git.io', {form: {url: url}}, shortenCallback)
+    request.post('https://git.io', {form: {url: url}}, shortenCallback)
+  })
 }
-
-var getRepoName = parser.getRepoName;
 
 const reposToReportInStaff = new Set(['Pokemon-Showdown', 'Pokemon-Showdown-Client', 'Pokemon-Showdown-Dex'])
 
@@ -60,7 +60,6 @@ function toUsername (name: string) {
 }
 
 github.on('push', function push (repo, ref, result) {
-  var url = result.compare
   var branch = /[^/]+$/.exec(ref)[0]
   if (branch !== 'master') return
   var promises = []
@@ -68,28 +67,24 @@ github.on('push', function push (repo, ref, result) {
   var messagesDiscord: string[] = []
   var staffMessages: string[] = []
 
-  result.commits.forEach(function (commit) {
-    promises.push(new Promise(function (resolve, reject) {
-      shorten(commit.url, function (url) {
-        var commitMessage = commit.message
-        var shortCommit = /.+/.exec(commitMessage)[0]
-        if (commitMessage !== shortCommit) {
-          shortCommit += '…'
-        }
-        // result.sender.login here is the login of user which performed the push,
-        // not the original author of the commit. We don't have the GitHub login for
-        // the user, the best we have for attribution is the commit's author's name.
-        var username = toUsername(commit.author.name)
-        const id = commit.id.substring(0, 6)
-        messagesPS.push(parser.formatPush('PS', id, repo, username, url, shortCommit))
-        staffMessages.push(parser.formatPush('PS', id, repo, username, url, shortCommit, true))
-        messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username, url, shortCommit));
-        return resolve()
-      })
-    }))
-  })
+  Promise.all(result.commits.map(commit => new Promise(async (resolve) => {
+      commit.url = await shorten(commit.url)
 
-  Promise.all(promises).then(function () {
+      var commitMessage = commit.message
+      var shortCommit = /.+/.exec(commitMessage)[0]
+      if (commitMessage !== shortCommit) {
+        shortCommit += '…'
+      }
+      // result.sender.login here is the login of user which performed the push,
+      // not the original author of the commit. We don't have the GitHub login for
+      // the user, the best we have for attribution is the commit's author's name.
+      var username = toUsername(commit.author.name)
+      const id = commit.id.substring(0, 6)
+      messagesPS.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit))
+      staffMessages.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit, true))
+      messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username, commit.url, shortCommit));
+      resolve()
+  }))).then(function () {
     showdownClient.report('/addhtmlbox ' + messagesPS.join('<br>'))
     discord.report(messagesDiscord.join('\n'), repo)
     if (reposToReportInStaff.has(repo)) showdownClient.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
@@ -97,10 +92,9 @@ github.on('push', function push (repo, ref, result) {
 })
 
 
-
 var updates = {}
 
-github.on('pull_request', function pullRequest (repo, ref, result) {
+github.on('pull_request', async function pullRequest (repo, ref, result) {
   if (gitBans.has(result.sender.login.toLowerCase()) || gitBans.has(result.pull_request.user.login.toLowerCase())) {
     return
   }
@@ -123,14 +117,14 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
     return
   }
   updates[requestNumber] = now
-  shorten(url, function pullRequestShortened (url) {
-    const userName = toUsername(result.sender.login)
-    const title = result.pull_request.title
-    const ps = parser.formatPR('PS', repo, userName, action, requestNumber, title, url)
-    const dis = parser.formatPR('DISCORD', repo, userName, action, requestNumber, title, url);
-    showdownClient.report(ps)
-    discord.report(dis, repo)
-  })
+
+  url = await shorten(url);
+  const userName = toUsername(result.sender.login)
+  const title = result.pull_request.title
+  const ps = parser.formatPR('PS', repo, userName, action, requestNumber, title, url)
+  const dis = parser.formatPR('DISCORD', repo, userName, action, requestNumber, title, url);
+  showdownClient.report(ps)
+  discord.report(dis, repo)
 })
 
 var gitBans = new Set()
