@@ -33,7 +33,7 @@ exports.formatPR = function (location, repo, author, action, num, title, url) {
 
 exports.formatPush = function (location, hash, repo, author, url, message, staff) {
     var buff = ''
-    repo = this.getRepoName(repo);
+    repo = this.getRepoName(repo)
     if (location === 'PS') {
         var formattedRepo = `[<font color='FF00FF'>${escape(repo)}</font>]`
         var formattedUsername = `<font color='909090'>(${escape(author)})</font>`

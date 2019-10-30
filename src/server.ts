@@ -81,7 +81,7 @@ github.on('push', function push (repo, ref, result) {
       const id = commit.id.substring(0, 6)
       messagesPS.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit))
       staffMessages.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit, true))
-      messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username, commit.url, shortCommit));
+      messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username, commit.url, shortCommit))
   })).then(function () {
     showdownClient.report('/addhtmlbox ' + messagesPS.join('<br>'))
     discord.report(messagesDiscord.join('\n'), repo)
@@ -116,11 +116,11 @@ github.on('pull_request', async function pullRequest (repo, ref, result) {
   }
   updates[requestNumber] = now
 
-  url = await shorten(url);
+  url = await shorten(url)
   const userName = toUsername(result.sender.login)
   const title = result.pull_request.title
   const ps = parser.formatPR('PS', repo, userName, action, requestNumber, title, url)
-  const dis = parser.formatPR('DISCORD', repo, userName, action, requestNumber, title, url);
+  const dis = parser.formatPR('DISCORD', repo, userName, action, requestNumber, title, url)
   showdownClient.report(ps)
   discord.report(dis, repo)
 })
