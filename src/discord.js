@@ -1,47 +1,44 @@
 'use strict'
 
-const discordjs = require('discord.js')
-const getRepo = require('./parser').getRepoName
-
+var discordjs = require('discord.js')
 var client = new discordjs.Client()
-var token = process.env[`npm_package_config_token`]
-var notify = process.env[`npm_package_config_discordnotify`]
-var defaultNotify = process.env[`npm_package_config_discorddefault`]
 
-if (notify) notify = JSON.parse(notify)
+var configPre = `npm_package_config_`
+var config = {
+    token: process.env[`${configPre}token`],
+    notify: process.env[`${configPre}discordnotify`],
+    defaultNotify: process.env[`${configPre}discorddefault`],
+}
+exports.misConfigured = config.token && (!config.notify && !config.defaultNotify)
 
-if (token) client.login(token)
+if (config.notify) config.notify = new Map(Object.entries(JSON.parse(config.notify)))
 
-var loggedIn = false
+var loggedIn = ''
 
 client.on('ready', function() {
-    console.log('Successfully connected to Discord')
-    loggedIn = true
+    console.log(`Successfully logged in to Discord as ${client.user.tag}`)
+    loggedIn = client.user.tag
 })
 
-var noLoginWarning = false
-var noChanSetWarning = false
+if (config.token) {
+    client.login(config.token).then(function() {
+        // Do nothing (bot reports above if login was successful)
+    }).catch(function(error) {
+        // Bot failed to login
+        console.log(`Discord - ${error.message}`)
+    })
+}
 
 exports.report = function (message, repo) {
-    if (!loggedIn && !noLoginWarning) {
-        console.log('A webhook was  recieved and attempted to send to Discord, but the bot is not logged in to Discord.')
-        noLoginWarning = true
-        return
-    }
-    if (!notify && !noChanSetWarning) {
-        console.log('A webhook was recived and attempted to send to Discord, but no channels were set to be notified to Discord.')
-        noChanSetWarning = true
-        return
-    }
-    repo = getRepo(repo)
-    var channels = notify[repo]
-    if (channels.length) {
-        for (let chan of channels) {
+    if (!loggedIn) return
+    var channels = config.notify.get(repo)
+    if (channels) {
+        for (var chan of channels) {
             var curChan = client.channels.get(chan)
             if (curChan) curChan.send(message)
         }
-    } else if (defaultNotify) {
-        var defaultChannel = client.channels.get(defaultNotify)
+    } else if (config.defaultNotify) {
+        var defaultChannel = client.channels.get(config.defaultNotify)
         if (defaultChannel) defaultChannel.send(message)
     }
 }

@@ -28,6 +28,14 @@ showdownClient.connect()
 
 var discord = require('./discord')
 
+if (discord.misConfigured) {
+  console.error("The token for Discord to login is set, but there are no channels set to notify with changes.")
+  process.exit(1)
+}
+
+var showdownFormat = parser.showdown
+var discordFormat = parser.discord
+
 var allowedAuthLevels = new Set('~#*&@%')
 
 var github = require('githubhook')({
@@ -79,16 +87,15 @@ github.on('push', function push (repo, ref, result) {
       // the user, the best we have for attribution is the commit's author's name.
       var username = toUsername(commit.author.name)
       const id = commit.id.substring(0, 6)
-      messagesPS.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit))
-      staffMessages.push(parser.formatPush('PS', id, repo, username, commit.url, shortCommit, true))
-      messagesDiscord.push(parser.formatPush('DISCORD', id, repo, username, commit.url, shortCommit))
+      messagesPS.push(showdownFormat.push(id, repo, username, commit.url, shortCommit))
+      staffMessages.push(showdownFormat.push(id, repo, username, commit.url, shortCommit, true))
+      messagesDiscord.push(discordFormat.push(id, repo, username, commit.url, shortCommit))
   })).then(function () {
     showdownClient.report('/addhtmlbox ' + messagesPS.join('<br>'))
     discord.report(messagesDiscord.join('\n'), repo)
     if (reposToReportInStaff.has(repo)) showdownClient.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
   })
 })
-
 
 var updates = {}
 
@@ -119,8 +126,8 @@ github.on('pull_request', async function pullRequest (repo, ref, result) {
   url = await shorten(url)
   const userName = toUsername(result.sender.login)
   const title = result.pull_request.title
-  const ps = parser.formatPR('PS', repo, userName, action, requestNumber, title, url)
-  const dis = parser.formatPR('DISCORD', repo, userName, action, requestNumber, title, url)
+  const ps = showdownFormat.pullReq(repo, userName, action, requestNumber, title, url)
+  const dis = discordFormat.pullReq(repo, userName, action, requestNumber, title, url)
   showdownClient.report(ps)
   discord.report(dis, repo)
 })

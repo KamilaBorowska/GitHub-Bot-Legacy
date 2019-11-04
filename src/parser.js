@@ -5,7 +5,7 @@
 
 var escape = require('escape-html')
 
-exports.getRepoName = function (repo) {
+function getRepoName (repo) {
     switch (repo) {
         case 'Pokemon-Showdown':
             return 'server'
@@ -17,24 +17,18 @@ exports.getRepoName = function (repo) {
             return repo.toLowerCase()
       }
 }
+exports.getRepoName = getRepoName
 
-exports.formatPR = function (location, repo, author, action, num, title, url) {
-    var buff = ''
-    repo = this.getRepoName(repo)
-    if (location === 'PS') {
-        buff = `/addhtmlbox [<font color='FF00FF'>${escape(repo)}</font>] <font color='909090'>${author}</font> ` +
+exports.showdown = {
+    pullReq(repo, author, action, num, title, url) {
+        repo = getRepoName(repo)
+        var buff = `/addhtmlbox [<font color='FF00FF'>${escape(repo)}</font>] <font color='909090'>${author}</font> ` +
         `${action} <a href=\"${url}\">PR#${num}</a>: ${title}`
         return buff
-    } else if (location === 'DISCORD') {
-        buff = `[${repo}] ${author} ${action} PR#${num}: ${title} (${url})`
-        return buff
-    }
-}
-
-exports.formatPush = function (location, hash, repo, author, url, message, staff) {
-    var buff = ''
-    repo = this.getRepoName(repo)
-    if (location === 'PS') {
+    },
+    push(hash, repo, author, url, message, staff) {
+        repo = getRepoName(repo)
+        var buff = '';
         var formattedRepo = `[<font color='FF00FF'>${escape(repo)}</font>]`
         var formattedUsername = `<font color='909090'>(${escape(author)})</font>`
         buff += `${formattedRepo} <a href=\"${escape(url)}\">`
@@ -44,8 +38,18 @@ exports.formatPush = function (location, hash, repo, author, url, message, staff
             buff += `<font color='606060'>${escape(hash)}</font></a> ${escape(message)} ${formattedUsername}`
         }
         return buff
-    } else if (location === 'DISCORD') {
-        buff += `[${repo}] ${hash}: ${message} (By: ${author}, ${url})`
+    }
+}
+
+exports.discord = {
+    pullReq(repo, author, action, num, title, url) {
+        repo = getRepoName(repo)
+        var buff = `[${repo}] ${author} ${action} PR#${num}: ${title} (${url})`
+        return buff
+    },
+    push(hash, repo, author, url, message) {
+        repo = getRepoName(repo)
+        var buff = `[${repo}] ${hash}: ${message} (By: ${author}, ${url})`
         return buff
     }
 }

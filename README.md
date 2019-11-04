@@ -16,8 +16,8 @@ properties that can be configured for a bot.
 -   `serverport` - server port (default 8000)
 -   `serverid` - server identifier used for logins (default showdown)
 -   `token` - token used to login to Discord
--   `discordnotify` - JSON of repos and arrays of channels to notify of changes
--   `discorddefault` - default channel to notify on Discord
+-   `discordnotify` - JSON of repos (case-sensitive) and arrays of channel IDs to notify of changes
+-   `discorddefault` - default channel ID to notify on Discord
 
 
 To set repository to trigger bot, access settings panel, pick "Webhooks
