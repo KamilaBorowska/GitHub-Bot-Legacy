@@ -4,6 +4,7 @@ import * as request from 'request'
 import { Response } from 'request'
 import * as h from 'escape-html'
 import * as usernames from './usernames.json'
+import * as parser from './parser.js'
 
 var port = +process.env.npm_package_config_webhookport
 if (!port) {
@@ -22,8 +23,18 @@ var parameters = {}
 Object.keys(Showdown.keys).forEach(function (key) {
   parameters[key] = process.env[`npm_package_config_${key}`]
 })
-var client = new Showdown(parameters)
-client.connect()
+var showdownClient = new Showdown(parameters)
+showdownClient.connect()
+
+var discord = require('./discord')
+
+if (discord.misConfigured) {
+  console.error("The token for Discord to login is set, but there are no channels set to notify with changes.")
+  process.exit(1)
+}
+
+var showdownFormat = parser.showdown
+var discordFormat = parser.discord
 
 var allowedAuthLevels = new Set('~#*&@%')
 
@@ -33,28 +44,17 @@ var github = require('githubhook')({
   logger: console
 })
 
-function shorten (url: string, callback: (shortened: string) => void) {
-  function shortenCallback (error: unknown, response: Response) {
-    var shortenedUrl = url
-    if (!error && response.headers.location) {
-      shortenedUrl = response.headers.location
+function shorten (url: string) {
+  return new Promise(function (resolve, reject) {
+    function shortenCallback (error: unknown, response: Response) {
+      var shortenedUrl = url
+      if (!error && response.headers.location) {
+        shortenedUrl = response.headers.location
+      }
+      resolve(shortenedUrl)
     }
-    callback(shortenedUrl)
-  }
-  request.post('https://git.io', {form: {url: url}}, shortenCallback)
-}
-
-function getRepoName (repo: string) {
-  switch (repo) {
-    case 'Pokemon-Showdown':
-      return 'server'
-    case 'Pokemon-Showdown-Client':
-      return 'client'
-    case 'Pokemon-Showdown-Dex':
-      return 'dex'
-    default:
-      return repo.toLowerCase()
-  }
+    request.post('https://git.io', {form: {url: url}}, shortenCallback)
+  })
 }
 
 const reposToReportInStaff = new Set(['Pokemon-Showdown', 'Pokemon-Showdown-Client', 'Pokemon-Showdown-Dex'])
@@ -68,14 +68,15 @@ function toUsername (name: string) {
 }
 
 github.on('push', function push (repo, ref, result) {
-  var url = result.compare
   var branch = /[^/]+$/.exec(ref)[0]
-  shorten(url, function pushShortened (url) {
-    if (branch !== 'master') return
-    var messages: string[] = []
-    var staffMessages: string[] = []
+  if (branch !== 'master') return
+  var messagesPS: string[] = []
+  var messagesDiscord: string[] = []
+  var staffMessages: string[] = []
 
-    result.commits.forEach(function (commit) {
+  Promise.all(result.commits.map(async commit => {
+      commit.url = await shorten(commit.url)
+
       var commitMessage = commit.message
       var shortCommit = /.+/.exec(commitMessage)[0]
       if (commitMessage !== shortCommit) {
@@ -85,24 +86,20 @@ github.on('push', function push (repo, ref, result) {
       // not the original author of the commit. We don't have the GitHub login for
       // the user, the best we have for attribution is the commit's author's name.
       var username = toUsername(commit.author.name)
-      const repoName = getRepoName(repo)
-      const { url } = commit
       const id = commit.id.substring(0, 6)
-      const formattedRepo = `[<font color='FF00FF'>${h(repoName)}</font>]`
-      const formattedUserName = `<font color='909090'>(${h(username)})</font>`
-      messages.push(`${formattedRepo} <a href=\"${h(url)}\"><font color='606060'>${h(id)}</font></a> ${h(shortCommit)} ${formattedUserName}`)
-      staffMessages.push(`${formattedRepo} <a href=\"${h(url)}\">${h(shortCommit)}</a> ${formattedUserName}`)
-    })
-    client.report('/addhtmlbox ' + messages.join('<br>'))
-    if (reposToReportInStaff.has(repo)) {
-      client.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
-    }
+      messagesPS.push(showdownFormat.push(id, repo, username, commit.url, shortCommit))
+      staffMessages.push(showdownFormat.push(id, repo, username, commit.url, shortCommit, true))
+      messagesDiscord.push(discordFormat.push(id, repo, username, commit.url, shortCommit))
+  })).then(function () {
+    showdownClient.report('/addhtmlbox ' + messagesPS.join('<br>'))
+    discord.report(messagesDiscord.join('\n'), repo)
+    if (reposToReportInStaff.has(repo)) showdownClient.reportStaff('/addhtmlbox ' + staffMessages.join('<br>'))
   })
 })
 
 var updates = {}
 
-github.on('pull_request', function pullRequest (repo, ref, result) {
+github.on('pull_request', async function pullRequest (repo, ref, result) {
   if (gitBans.has(result.sender.login.toLowerCase()) || gitBans.has(result.pull_request.user.login.toLowerCase())) {
     return
   }
@@ -125,38 +122,37 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
     return
   }
   updates[requestNumber] = now
-  shorten(url, function pullRequestShortened (url) {
-    const repoName = getRepoName(repo)
-    const userName = toUsername(result.sender.login)
-    const title = result.pull_request.title
-    client.report(
-      `/addhtmlbox [<font color='FF00FF'>${h(repoName)}</font>] <font color='909090'>${userName}</font> ` +
-      `${action} <a href=\"${url}\">PR#${requestNumber}</a>: ${title}`
-    )
-  })
+
+  url = await shorten(url)
+  const userName = toUsername(result.sender.login)
+  const title = result.pull_request.title
+  const ps = showdownFormat.pullReq(repo, userName, action, requestNumber, title, url)
+  const dis = discordFormat.pullReq(repo, userName, action, requestNumber, title, url)
+  showdownClient.report(ps)
+  discord.report(dis, repo)
 })
 
 var gitBans = new Set()
 
-client.on('message', function (user, message) {
+showdownClient.on('message', function (user, message) {
   if (allowedAuthLevels.has(user.charAt(0)) && message.charAt(0) === '.') {
     var parts = message.substring(1).split(' ')
     var command = parts[0]
     var argument = parts.slice(1).join(' ').toLowerCase().trim()
     if (command === 'gitban') {
       if (gitBans.has(argument)) {
-        client.report(`/modnote '${argument}' is already banned from being reported`)
+        showdownClient.report(`/modnote '${argument}' is already banned from being reported`)
         return
       }
       gitBans.add(argument)
-      client.report(`/modnote '${argument}' was banned from being reported by this bot`)
+      showdownClient.report(`/modnote '${argument}' was banned from being reported by this bot`)
     } else if (command === 'gitunban') {
       if (!gitBans.has(argument)) {
-        client.report(`/modnote '${argument}' is already allowed to be reported`)
+        showdownClient.report(`/modnote '${argument}' is already allowed to be reported`)
         return
       }
       gitBans.delete(argument)
-      client.report(`/modnote '${argument}' was unbanned from being reported by this bot`)
+      showdownClient.report(`/modnote '${argument}' was unbanned from being reported by this bot`)
     }
   }
 })

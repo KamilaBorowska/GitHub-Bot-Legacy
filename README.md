@@ -1,7 +1,7 @@
 GitHub Bot
 ==========
 
-This bot receives commit data from GitHub, and posts in the Showdown chat.
+This bot receives commit data from GitHub, and posts in the Showdown chat, with the option of a Discord server.
 
 It can be configured using `npm config set psdevbot:PROPERTY_NAME`. There are
 properties that can be configured for a bot.
@@ -15,6 +15,10 @@ properties that can be configured for a bot.
 -   `server` - server address (default sim.smogon.com)
 -   `serverport` - server port (default 8000)
 -   `serverid` - server identifier used for logins (default showdown)
+-   `token` - token used to login to Discord
+-   `discordnotify` - JSON of repos (case-sensitive) and arrays of channel IDs to notify of changes
+-   `discorddefault` - default channel ID to notify on Discord
+
 
 To set repository to trigger bot, access settings panel, pick "Webhooks
 & Services", select "Add webhook", set payload URL to
