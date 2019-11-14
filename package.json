@@ -2,12 +2,12 @@
     "name": "psdevbot",
     "version": "0.1.0",
     "description": "Bot that reports changes to Pokemon Showdown on Pokemon Showdown",
-    "bugs": "https://github.com/xfix/PSDevBot/issues",
+    "bugs": "https://github.com/smogon/GitHub-Bot/issues",
     "license": "MIT",
     "author": "xfix (Konrad Borowski)",
     "repository": {
         "type": "git",
-        "url": "https://github.com/xfix/PSDevBot.git"
+        "url": "https://github.com/smogon/GitHub-Bot.git"
     },
     "config": {
         "webhookport": "3420",
