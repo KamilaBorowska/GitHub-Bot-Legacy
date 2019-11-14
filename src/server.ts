@@ -46,9 +46,9 @@ function shorten (url: string, callback: (shortened: string) => void) {
 
 function getRepoName (repo: string) {
   switch (repo) {
-    case 'Pokemon-Showdown':
+    case 'pokemon-showdown':
       return 'server'
-    case 'Pokemon-Showdown-Client':
+    case 'pokemon-showdown-client':
       return 'client'
     case 'Pokemon-Showdown-Dex':
       return 'dex'
