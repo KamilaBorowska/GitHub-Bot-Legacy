@@ -57,7 +57,7 @@ function getRepoName (repo: string) {
   }
 }
 
-const reposToReportInStaff = new Set(['Pokemon-Showdown', 'Pokemon-Showdown-Client', 'Pokemon-Showdown-Dex'])
+const reposToReportInStaff = new Set(['pokemon-showdown', 'pokemon-showdown-client', 'Pokemon-Showdown-Dex'])
 
 // Name can either be a login (for pull_request) or the commit author's name (for push).
 // If we can't find the name in our username's map we want to return the login as is
