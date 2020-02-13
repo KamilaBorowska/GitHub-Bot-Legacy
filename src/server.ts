@@ -116,6 +116,10 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
   if (action === 'review_requested') {
     action = 'requested a review for'
   }
+  // Marking a PR as ready for review after drafting isn't really important
+  if (action === 'ready_for_review') {
+    return
+  }
   // Nobody cares about labels
   if (action === 'labeled' || action === 'unlabeled') {
     return
