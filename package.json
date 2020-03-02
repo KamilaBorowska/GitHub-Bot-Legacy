@@ -30,7 +30,7 @@
         "@types/escape-html": "0.0.20",
         "@types/node": "^13.7.6",
         "@types/request": "^2.48.4",
-        "typescript": "^3.8.2"
+        "typescript": "^3.8.3"
     },
     "scripts": {
         "build": "tsc",
