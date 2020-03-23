@@ -28,7 +28,7 @@
     "private": true,
     "devDependencies": {
         "@types/escape-html": "0.0.20",
-        "@types/node": "^13.9.2",
+        "@types/node": "^13.9.3",
         "@types/request": "^2.48.4",
         "typescript": "^3.8.3"
     },
