@@ -140,7 +140,7 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
   })
 })
 
-var gitBans = new Set()
+var gitBans = new Set(['dependabot-preview[bot]'])
 
 client.on('message', function (user, message) {
   if (allowedAuthLevels.has(user.charAt(0)) && message.charAt(0) === '.') {
