@@ -124,6 +124,11 @@ github.on('pull_request', function pullRequest (repo, ref, result) {
   if (action === 'labeled' || action === 'unlabeled') {
     return
   }
+  // not really important to see converting open to draft
+  if (action === 'converted_to_draft') {
+    return
+  }
+  
   var now = +new Date()
   if (updates[requestNumber] && updates[requestNumber] + COOLDOWN > now) {
     return
