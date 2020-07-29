@@ -105,11 +105,11 @@ class Showdown extends EventEmitter {
           return
         }
         const assertion = mapper(body)
-        var command = `/trn ${nickname},0,${assertion}`
-        this.report(command)
-        this.report('/join ' + this.room)
-        this.report('/join staff')
-        this.report('/away')
+        var command = `trn ${nickname},0,${assertion}`
+        this.globalCommand(command)
+        this.globalCommand('join ' + this.room)
+        this.globalCommand('join staff')
+        this.globalCommand('away')
       }
     }
     if (password) {
@@ -145,18 +145,21 @@ class Showdown extends EventEmitter {
     this.emit('message', parts[3], parts.slice(4).join('|'))
   }
 
+  globalCommand(command: string) {
+    this._send(`|/${command}`)
+  }
+
   report(message: string) {
-    this.queue = this.queue.then(() => {
-      this.connection.send(`${this.room}|${message}`.replace(/\n/g, ''))
-      return new Promise(resolve => {
-        setTimeout(resolve, 500)
-      })
-    })
+    this._send(`${this.room}|${message}`.replace(/\n/g, ''))
   }
 
   reportStaff(message: string) {
+    this._send(`staff|${message}`.replace(/\n/g, ''))
+  }
+
+  private _send(message: string) {
     this.queue = this.queue.then(() => {
-      this.connection.send(`staff|${message}`.replace(/\n/g, ''))
+      this.connection.send(message)
       return new Promise(resolve => {
         setTimeout(resolve, 500)
       })
