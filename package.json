@@ -23,7 +23,7 @@
         "escape-html": "^1.0.1",
         "githubhook": "^1.9.3",
         "request": "^2.88.2",
-        "websocket": "^1.0.31"
+        "websocket": "^1.0.32"
     },
     "private": true,
     "devDependencies": {
