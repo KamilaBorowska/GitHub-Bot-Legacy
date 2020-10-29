@@ -72,7 +72,6 @@ class Showdown extends EventEmitter {
     this.connection = connection
 
     var onConnectionFailure = this.onConnectionFailure.bind(this)
-    connection.on('error', onConnectionFailure)
     connection.on('close', onConnectionFailure)
     connection.on('message', this.onMessage.bind(this))
     console.info('Connected to Showdown server')
